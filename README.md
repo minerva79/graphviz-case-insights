@@ -39,12 +39,6 @@
      sudo apt-get install graphviz
      ```
 
-5. Set up your OpenAI API key:
-   - Add the `OPENAI_API_KEY` as an environment variable:
-     ```bash
-     export OPENAI_API_KEY=your_openai_api_key  # On Windows: set OPENAI_API_KEY=your_openai_api_key
-     ```
-
 ## Usage
 
 1. Run the Streamlit app:
@@ -55,10 +49,6 @@
 2. Open your browser and navigate to `http://localhost:8501`.
 
 3. Enter a case study in the text input box, click "Process Case Study," and view the generated insights and causal loop diagram.
-
-## Deployment
-
-You can deploy this app on [Streamlit Cloud](https://streamlit.io/cloud) or other hosting platforms. Ensure you set the `OPENAI_API_KEY` as a secret during deployment.
 
 ## Repository Structure
 
@@ -88,7 +78,7 @@ Contributions are welcome! Feel free to fork this repository, make changes, and 
 ```plaintext
 MIT License
 
-Copyright (c) 2025 Your Name
+Copyright (c) 2025 Adam Quek
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

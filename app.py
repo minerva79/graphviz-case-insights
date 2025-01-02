@@ -5,14 +5,14 @@ import streamlit as st
 from system_messages import system_messages  # Import system messages
 
 # Define the function to process the case study
-def process_case_study(case_study, system_messages, model="chatgpt-4o-latest", temperature=0.1):
+def process_case_study(case_study, api_key, system_messages, model="chatgpt-4o-latest", temperature=0.1):
     """
     Process a case study through a series of chained prompts using OpenAI's API.
     """
     messages = []
     responses = {}
 
-    client = OpenAI()
+    client = OpenAI(api_key=api_key)
 
     for i, system_message in enumerate(system_messages, start=1):
         if i == 1:
@@ -52,34 +52,44 @@ def render_graphviz(script):
 # Streamlit App
 st.title("Case Study Analyzer with Causal Loop Diagram")
 
-# Input Section
-case_study = st.text_area("Enter your case study:", height=200, placeholder="Type or paste the case study text here...")
-process_button = st.button("Process Case Study")
+# API Key Input
+if "api_key" not in st.session_state:
+    st.session_state.api_key = None
 
-if process_button and case_study.strip():
-    with st.spinner("Processing the case study, please wait..."):
-        try:
-            # Process the case study
-            responses = process_case_study(case_study, system_messages)
-            final_output = responses["Final_Output"]
+api_key = st.text_input("Enter your OpenAI API key:", type="password")
+if api_key:
+    st.session_state.api_key = api_key
 
-            # Display the final output
-            st.subheader("Analysis Output")
-            st.text_area("Generated Insights", value=final_output, height=300)
+# Check if API key is provided
+if st.session_state.api_key:
+    # Input Section
+    case_study = st.text_area(
+        "Enter your case study:",
+        height=200,
+        placeholder="Type or paste the case study text here..."
+    )
+    process_button = st.button("Process Case Study")
 
-            # Extract and render the Graphviz diagram
-            graphviz_script = extract_graphviz_script(final_output)
-            if graphviz_script:
-                st.subheader("Causal Loop Diagram")
-                # Use Streamlit's native graphviz_chart
-                st.graphviz_chart(graphviz_script)
+    if process_button and case_study.strip():
+        with st.spinner("Processing the case study, please wait..."):
+            try:
+                # Process the case study
+                responses = process_case_study(case_study, st.session_state.api_key, system_messages)
+                final_output = responses["Final_Output"]
 
-            # Optional: Debug the raw Graphviz script
-                st.text("Graphviz Script:")
-                st.code(graphviz_script, language="dot")
-            else:
-                st.warning("No Graphviz diagram found in the output.")
+                # Display the final output
+                st.subheader("Analysis Output")
+                st.text_area("Generated Insights", value=final_output, height=300)
 
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+                # Extract and render the Graphviz diagram
+                graphviz_script = extract_graphviz_script(final_output)
+                if graphviz_script:
+                    st.subheader("Causal Loop Diagram")
+                    st.graphviz_chart(graphviz_script)
+                else:
+                    st.warning("No Graphviz diagram found in the output.")
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+else:
+    st.warning("Please enter your OpenAI API key to proceed.")
 
